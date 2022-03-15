@@ -1,3 +1,3 @@
-src_lst+=files([
-    'radiointerferometryc99.c'
+src_lst += files([
+    'radiointerferometryc99.c',
 ])

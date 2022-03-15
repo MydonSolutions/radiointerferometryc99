@@ -1,10 +1,10 @@
-#include "uvh5/uvh5_calc.h"
+#include "radiointerferometryc99.h"
 
-float UVH5calc_julian_date_from_unix(float unix_sec) {
+float calc_julian_date_from_unix(float unix_sec) {
 	return (unix_sec / DAYSEC) / 2440587.5;
 }
 
-float UVH5calc_julian_date_from_guppi_param(
+float calc_julian_date_from_guppi_param(
 	float tbin,
 	size_t sampleperblk,
 	size_t piperblk,
@@ -13,10 +13,10 @@ float UVH5calc_julian_date_from_guppi_param(
 ) {
 	 float tperblk = sampleperblk * tbin;
 	 float tperpktidx = tperblk / piperblk;
-	 return UVH5calc_julian_date_from_unix(synctime + tperpktidx*pktidx);
+	 return calc_julian_date_from_unix(synctime + tperpktidx*pktidx);
 }
 
-void UVH5calc_ha_dec_rad(
+void calc_ha_dec_rad(
 	double ra_rad,
 	double dec_rad,
 	double longitude_rad,
@@ -47,14 +47,14 @@ void UVH5calc_ha_dec_rad(
  * in an error on the order of 100 microarcseconds or approximately
  * 7 microseconds.
  */
-double UVH5calc_lst(
+double calc_lst(
 	double timemjd,
 	double dut1
 ) {
 	return eraGst06a(timemjd, dut1, timemjd, dut1);
 }
 
-float UVH5calc_hypotenuse_f(float* position, int dims) {
+float calc_hypotenuse_f(float* position, int dims) {
 	double sum = 0.0;
 	while(--dims > 0) {
 		sum += position[dims]*position[dims];
@@ -62,7 +62,7 @@ float UVH5calc_hypotenuse_f(float* position, int dims) {
 	return (float) sqrt(sum);
 }
 
-double UVH5calc_hypotenuse(double* position, int dims) {
+double calc_hypotenuse(double* position, int dims) {
 	double sum = 0.0;
 	while(--dims > 0) {
 		sum += position[dims]*position[dims];
@@ -70,7 +70,7 @@ double UVH5calc_hypotenuse(double* position, int dims) {
 	return sqrt(sum);
 }
 
-void UVH5calc_frame_translate(double* positions, int position_count, double translation[3]) {
+void calc_frame_translate(double* positions, int position_count, double translation[3]) {
 	while(--position_count >= 0)
 	{
 		positions[position_count*3+0] += translation[0];
@@ -82,7 +82,7 @@ void UVH5calc_frame_translate(double* positions, int position_count, double tran
 /*
  * https://github.com/JuliaGeo/Geodesy.jl/blob/dc2b3bd4d73a5fb4ed6f2f9c5462763ac54e5196/src/transformations.jl#L175-L188
  */
-void UVH5calc_ecef_from_lla(
+void calc_ecef_from_lla(
 	double ecef[3],
 	const double longitude_rad,
 	const double latitude_rad,
@@ -155,7 +155,7 @@ static inline void _rotate_around_z_cached_trig(
 /*
  * Subtracts ECEF(LLA, WGS84) from positions.
  */
-void UVH5calc_position_to_xyz_frame_from_ecef(
+void calc_position_to_xyz_frame_from_ecef(
 	double* positions,
 	int position_count,
 	double longitude_rad,
@@ -166,7 +166,7 @@ void UVH5calc_position_to_xyz_frame_from_ecef(
 	geodesy_t wgs84 = {0};
 	geodesy_from_af_inv(&wgs84, WGS84_A_METERS, WGS84_F_INV);
 
-	UVH5calc_ecef_from_lla(
+	calc_ecef_from_lla(
 		ecef,
 		longitude_rad,
 		latitude_rad,
@@ -176,13 +176,13 @@ void UVH5calc_position_to_xyz_frame_from_ecef(
 	ecef[0] *= -1.0;
 	ecef[1] *= -1.0;
 	ecef[2] *= -1.0;
-	UVH5calc_frame_translate(positions, position_count, ecef);
+	calc_frame_translate(positions, position_count, ecef);
 }
 
 /*
  * Adds ECEF(LLA, WGS84) to positions.
  */
-void UVH5calc_position_to_ecef_frame_from_xyz(
+void calc_position_to_ecef_frame_from_xyz(
 	double* positions,
 	int position_count,
 	double longitude_rad,
@@ -193,14 +193,14 @@ void UVH5calc_position_to_ecef_frame_from_xyz(
 	geodesy_t wgs84 = {0};
 	geodesy_from_af_inv(&wgs84, WGS84_A_METERS, WGS84_F_INV);
 
-	UVH5calc_ecef_from_lla(
+	calc_ecef_from_lla(
 		ecef,
 		longitude_rad,
 		latitude_rad,
 		altitude,
 		&wgs84
 	);
-	UVH5calc_frame_translate(positions, position_count, ecef);
+	calc_frame_translate(positions, position_count, ecef);
 }
 
 /*
@@ -210,7 +210,7 @@ void UVH5calc_position_to_ecef_frame_from_xyz(
  * anticlockwise about the Z (i.e. second) axis by `-lon_rad`, producing a
  * (Y,Z,X) frame which is then permuted to (X,Y,Z).
  */
-void UVH5calc_position_to_xyz_frame_from_enu(
+void calc_position_to_xyz_frame_from_enu(
 	double* positions,
 	int position_count,
 	double longitude_rad,
@@ -251,7 +251,7 @@ void UVH5calc_position_to_xyz_frame_from_enu(
  * anticlockwise about the E (i.e. second) axis by `-lat_rad`, producing a
  * (U,E,N) frame which is then permuted to (E,N,U).
  */
-void UVH5calc_position_to_enu_frame_from_xyz(
+void calc_position_to_enu_frame_from_xyz(
 	double* positions,
 	int position_count,
 	double longitude_rad,
@@ -288,21 +288,21 @@ void UVH5calc_position_to_enu_frame_from_xyz(
 /*
  * Effects `ecef -> xyz -> enu`.
  */
-void UVH5calc_position_to_enu_frame_from_ecef(
+void calc_position_to_enu_frame_from_ecef(
 	double* positions,
 	int position_count,
 	double longitude_rad,
 	double latitude_rad,
 	double altitude
 ) {
-  UVH5calc_position_to_xyz_frame_from_ecef(
+  calc_position_to_xyz_frame_from_ecef(
 		positions,
 		position_count,
 		longitude_rad,
 		latitude_rad,
 		altitude
 	);
-  UVH5calc_position_to_enu_frame_from_xyz(
+  calc_position_to_enu_frame_from_xyz(
 		positions,
 		position_count,
 		longitude_rad,
@@ -314,21 +314,21 @@ void UVH5calc_position_to_enu_frame_from_ecef(
 /*
  * Effects `enu -> xyz -> ecef`.
  */
-void UVH5calc_position_to_ecef_frame_from_enu(
+void calc_position_to_ecef_frame_from_enu(
 	double* positions,
 	int position_count,
 	double longitude_rad,
 	double latitude_rad,
 	double altitude
 ) {
-  UVH5calc_position_to_xyz_frame_from_enu(
+  calc_position_to_xyz_frame_from_enu(
 		positions,
 		position_count,
 		longitude_rad,
 		latitude_rad,
 		altitude
 	);
-  UVH5calc_position_to_ecef_frame_from_xyz(
+  calc_position_to_ecef_frame_from_xyz(
 		positions,
 		position_count,
 		longitude_rad,
@@ -346,7 +346,7 @@ void UVH5calc_position_to_ecef_frame_from_enu(
  * `-dec_rad`, producing the (U,V,W) frame where U is east, V is north, and W is
  * in the direction of projection.
  */
-void UVH5calc_position_to_uvw_frame_from_enu(
+void calc_position_to_uvw_frame_from_enu(
 	double* positions,
 	int position_count,
 	double hour_angle_rad,
@@ -391,7 +391,7 @@ void UVH5calc_position_to_uvw_frame_from_enu(
  * and W is in the direction of the given hour angle and declination as seen from
  * the given longitude.
  */
-void UVH5calc_position_to_uvw_frame_from_xyz(
+void calc_position_to_uvw_frame_from_xyz(
 	double* positions,
 	int position_count,
 	double hour_angle_rad,
