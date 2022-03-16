@@ -7,6 +7,6 @@ Only dependency is `liberfa`.
 
 `sudo apt install liberfa-dev`
 
-`$ meson build`
-`$ cd build`
-`build$ ninja`
+`$ meson builddir`
+`$ cd builddir`
+`builddir$ ninja`
