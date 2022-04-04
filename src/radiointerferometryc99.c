@@ -16,6 +16,49 @@ float calc_julian_date_from_guppi_param(
 	 return calc_julian_date_from_unix(synctime + tperpktidx*pktidx);
 }
 
+void calc_ha_dec_rad_a(
+	double longitude_rad,
+	double latitude_rad,
+	double altitude,
+	double timemjd,
+	double dut1,
+    eraASTROM* astrom
+) {
+	double eo;
+    eraApco13(
+        timemjd, 0,
+        dut1,
+        longitude_rad, latitude_rad, altitude,
+        0, 0,
+        0, 0, 0, 0,
+        astrom,
+        &eo
+    );
+}
+
+void calc_ha_dec_rad_b(
+	double ra_rad,
+	double dec_rad,
+    eraASTROM* astrom,
+	double* hour_angle_rad,
+	double* declination_rad
+) {
+	double aob, zob, rob, ri, di;
+    eraAtciq(
+        ra_rad, dec_rad,
+        0, 0, 0, 0,
+        astrom,
+        &ri, &di
+    );
+    eraAtioq(
+        ri, di,
+        astrom,
+        &aob, &zob,
+        hour_angle_rad, declination_rad,
+        &rob
+    );
+}
+
 void calc_ha_dec_rad(
 	double ra_rad,
 	double dec_rad,
@@ -37,7 +80,7 @@ void calc_ha_dec_rad(
 		0, 0,
 		0, 0, 0, 0,
 		&aob, &zob, hour_angle_rad,
-    declination_rad, &rob, &eo
+        declination_rad, &rob, &eo
 	);
 }
 
