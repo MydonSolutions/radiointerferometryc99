@@ -16,7 +16,7 @@ float calc_julian_date_from_guppi_param(
 	 return calc_julian_date_from_unix(synctime + tperpktidx*pktidx);
 }
 
-void calc_ha_dec_rad_a(
+void calc_independent_astrom(
 	double longitude_rad,
 	double latitude_rad,
 	double altitude,
@@ -36,7 +36,7 @@ void calc_ha_dec_rad_a(
     );
 }
 
-void calc_ha_dec_rad_b(
+void calc_ha_dec_rad_with_independent_astrom(
 	double ra_rad,
 	double dec_rad,
     eraASTROM* astrom,

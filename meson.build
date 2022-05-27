@@ -1,5 +1,5 @@
 project('radioInterferometryc99', 'c',
-  version: '0.4',
+  version: '0.5',
 )
 src_lst =[]
 inc_lst =[]

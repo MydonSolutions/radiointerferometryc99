@@ -48,7 +48,7 @@ double calc_hypotenuse(double* position, int dims);
 
 void calc_frame_translate(double* positions, int position_count, double translation[3]);
 
-void calc_ha_dec_rad_a(
+void calc_independent_astrom(
 	double longitude_rad,
 	double latitude_rad,
 	double altitude,
@@ -57,7 +57,7 @@ void calc_ha_dec_rad_a(
     eraASTROM* astrom
 );
 
-void calc_ha_dec_rad_b(
+void calc_ha_dec_rad_with_independent_astrom(
 	double ra_rad,
 	double dec_rad,
     eraASTROM* astrom,
