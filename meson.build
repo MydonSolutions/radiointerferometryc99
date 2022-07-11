@@ -1,5 +1,8 @@
 project('radioInterferometryc99', 'c',
   version: '0.5',
+  default_options: [
+    'c_std=c99',
+  ]
 )
 src_lst =[]
 inc_lst =[]

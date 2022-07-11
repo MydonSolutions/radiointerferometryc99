@@ -8,6 +8,7 @@
 #include "erfam.h"
 
 #define DAYSEC ERFA_DAYSEC
+#define M_PI 3.14159265358979323846
 
 static inline double calc_deg2rad(double deg) {return (deg/180)*M_PI;};
 
@@ -18,16 +19,26 @@ enum position_frames {
 	FRAME_UVW
 };
 
-float calc_julian_date_from_unix(float unix_sec);
+static inline double calc_modified_from_julian_date(double julian_date) {return  julian_date + 2400000.5;}
+static inline double calc_julian_date_from_modified(double modified_jd) {return  modified_jd - 2400000.5;}
 
-float calc_julian_date_from_guppi_param(
-	float tbin,
-	size_t sampleperblk,
-	size_t piperblk,
-	size_t synctime,
-	size_t pktidx
+double calc_julian_date_from_unix(double unix_sec);
+
+double calc_epoch_seconds_from_guppi_param(
+	const double tbin,
+	const size_t sampleperblk,
+	const size_t piperblk,
+	const size_t synctime,
+	const size_t pktidx
 );
 
+double calc_julian_date_from_guppi_param(
+	const double tbin,
+	const size_t sampleperblk,
+	const size_t piperblk,
+	const size_t synctime,
+	const size_t pktidx
+);
 
 void calc_ha_dec_rad(
 	double ra_rad,
