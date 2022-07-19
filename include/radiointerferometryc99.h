@@ -7,10 +7,11 @@
 #include "erfa.h"
 #include "erfam.h"
 
-#define DAYSEC ERFA_DAYSEC
-#define M_PI 3.14159265358979323846
+#define RADIOINTERFEROMETERY_DAYSEC ERFA_DAYSEC
+#define RADIOINTERFEROMETERY_PI 3.14159265358979323846
+#define RADIOINTERFEROMETERY_C 299792458.0
 
-static inline double calc_deg2rad(double deg) {return (deg/180)*M_PI;};
+static inline double calc_deg2rad(double deg) {return (deg/180)*RADIOINTERFEROMETERY_PI;};
 
 enum position_frames {
 	FRAME_ENU,
@@ -146,6 +147,16 @@ void calc_position_to_uvw_frame_from_xyz(
 	double hour_angle_rad,
 	double declination_rad,
 	double longitude_rad
+);
+
+void calc_position_delays(
+	double* positions_xyz_in_uvw_out,
+	int position_count,
+	int reference_position_index,
+	double hour_angle_rad,
+	double declination_rad,
+	double longitude_rad,
+	double* delays
 );
 
 #endif

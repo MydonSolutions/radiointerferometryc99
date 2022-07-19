@@ -1,7 +1,7 @@
 #include "radiointerferometryc99.h"
 
 double calc_julian_date_from_unix(double unix_sec) {
-	return (unix_sec / DAYSEC) / 2440587.5;
+	return (unix_sec / RADIOINTERFEROMETERY_DAYSEC) / 2440587.5;
 }
 
 double calc_epoch_seconds_from_guppi_param(
@@ -39,41 +39,41 @@ void calc_independent_astrom(
 	double altitude,
 	double timemjd,
 	double dut1,
-    eraASTROM* astrom
+	eraASTROM* astrom
 ) {
 	double eo;
-    eraApco13(
-        timemjd, 0,
-        dut1,
-        longitude_rad, latitude_rad, altitude,
-        0, 0,
-        0, 0, 0, 0,
-        astrom,
-        &eo
-    );
+	eraApco13(
+			timemjd, 0,
+			dut1,
+			longitude_rad, latitude_rad, altitude,
+			0, 0,
+			0, 0, 0, 0,
+			astrom,
+			&eo
+	);
 }
 
 void calc_ha_dec_rad_with_independent_astrom(
 	double ra_rad,
 	double dec_rad,
-    eraASTROM* astrom,
+	eraASTROM* astrom,
 	double* hour_angle_rad,
 	double* declination_rad
 ) {
 	double aob, zob, rob, ri, di;
-    eraAtciq(
-        ra_rad, dec_rad,
-        0, 0, 0, 0,
-        astrom,
-        &ri, &di
-    );
-    eraAtioq(
-        ri, di,
-        astrom,
-        &aob, &zob,
-        hour_angle_rad, declination_rad,
-        &rob
-    );
+	eraAtciq(
+			ra_rad, dec_rad,
+			0, 0, 0, 0,
+			astrom,
+			&ri, &di
+	);
+	eraAtioq(
+			ri, di,
+			astrom,
+			&aob, &zob,
+			hour_angle_rad, declination_rad,
+			&rob
+	);
 }
 
 void calc_ha_dec_rad(
@@ -482,5 +482,35 @@ void calc_position_to_uvw_frame_from_xyz(
 		positions[3*position_count + 0] = positions[3*position_count + 1]; // move U
 		positions[3*position_count + 1] = positions[3*position_count + 2]; // move U
 		positions[3*position_count + 2] = tmp; // move U
+	}
+}
+
+/*
+ *
+ * `positions_xyz_in_uvw_out` must be populated with `xyz` positions.
+ * Its contents will be overwritten with `uvw` positions.
+ */
+void calc_position_delays(
+	double* positions_xyz_in_uvw_out,
+	int position_count,
+	int reference_position_index,
+	double hour_angle_rad,
+	double declination_rad,
+	double longitude_rad,
+	double* delays
+) {
+	calc_position_to_uvw_frame_from_xyz(
+		positions_xyz_in_uvw_out,
+		position_count,
+		hour_angle_rad,
+		declination_rad,
+		longitude_rad
+	);
+	const double reference_w = positions_xyz_in_uvw_out[reference_position_index*3 + 2];
+	while(position_count-- >= 1) {
+		delays[position_count] = 
+			(positions_xyz_in_uvw_out[position_count*3 + 2] - reference_w) /
+				RADIOINTERFEROMETERY_C
+		;
 	}
 }
