@@ -1,9 +1,5 @@
 #include "radiointerferometryc99.h"
 
-double calc_julian_date_from_unix(double unix_sec) {
-	return (unix_sec / RADIOINTERFEROMETERY_DAYSEC) / 2440587.5;
-}
-
 double calc_epoch_seconds_from_guppi_param(
 	const double tbin,
 	const size_t sampleperblk,
@@ -43,13 +39,13 @@ void calc_independent_astrom(
 ) {
 	double eo;
 	eraApco13(
-			timemjd, 0,
-			dut1,
-			longitude_rad, latitude_rad, altitude,
-			0, 0,
-			0, 0, 0, 0,
-			astrom,
-			&eo
+		timemjd, 0,
+		dut1,
+		longitude_rad, latitude_rad, altitude,
+		0, 0,
+		0, 0, 0, 0,
+		astrom,
+		&eo
 	);
 }
 
@@ -62,17 +58,17 @@ void calc_ha_dec_rad_with_independent_astrom(
 ) {
 	double aob, zob, rob, ri, di;
 	eraAtciq(
-			ra_rad, dec_rad,
-			0, 0, 0, 0,
-			astrom,
-			&ri, &di
+		ra_rad, dec_rad,
+		0, 0, 0, 0,
+		astrom,
+		&ri, &di
 	);
 	eraAtioq(
-			ri, di,
-			astrom,
-			&aob, &zob,
-			hour_angle_rad, declination_rad,
-			&rob
+		ri, di,
+		astrom,
+		&aob, &zob,
+		hour_angle_rad, declination_rad,
+		&rob
 	);
 }
 
@@ -97,7 +93,7 @@ void calc_ha_dec_rad(
 		0, 0,
 		0, 0, 0, 0,
 		&aob, &zob, hour_angle_rad,
-        declination_rad, &rob, &eo
+		declination_rad, &rob, &eo
 	);
 }
 
@@ -149,16 +145,16 @@ void calc_ecef_from_lla(
 	const double altitude,
 	const geodesy_t* geo
 ) {
-    double sin_phi = sin(latitude_rad);
-		double cos_phi = cos(latitude_rad);
-    double sin_lambda = sin(longitude_rad);
-		double cos_lambda = cos(longitude_rad);
+	double sin_phi = sin(latitude_rad);
+	double cos_phi = cos(latitude_rad);
+	double sin_lambda = sin(longitude_rad);
+	double cos_lambda = cos(longitude_rad);
 
-    double N = geo->a / sqrt(1 - geo->e2 * sin_phi * sin_phi);  // Radius of curvature (meters)
+	double N = geo->a / sqrt(1 - geo->e2 * sin_phi * sin_phi);  // Radius of curvature (meters)
 
-    ecef[0] = (N + altitude) * cos_phi * cos_lambda;
-    ecef[1] = (N + altitude) * cos_phi * sin_lambda;
-    ecef[2] = (N * (1 - geo->e2) + altitude) * sin_phi;
+	ecef[0] = (N + altitude) * cos_phi * cos_lambda;
+	ecef[1] = (N + altitude) * cos_phi * sin_lambda;
+	ecef[2] = (N * (1 - geo->e2) + altitude) * sin_phi;
 }
 
 /*
@@ -355,14 +351,14 @@ void calc_position_to_enu_frame_from_ecef(
 	double latitude_rad,
 	double altitude
 ) {
-  calc_position_to_xyz_frame_from_ecef(
+	calc_position_to_xyz_frame_from_ecef(
 		positions,
 		position_count,
 		longitude_rad,
 		latitude_rad,
 		altitude
 	);
-  calc_position_to_enu_frame_from_xyz(
+	calc_position_to_enu_frame_from_xyz(
 		positions,
 		position_count,
 		longitude_rad,
@@ -381,14 +377,14 @@ void calc_position_to_ecef_frame_from_enu(
 	double latitude_rad,
 	double altitude
 ) {
-  calc_position_to_xyz_frame_from_enu(
+	calc_position_to_xyz_frame_from_enu(
 		positions,
 		position_count,
 		longitude_rad,
 		latitude_rad,
 		altitude
 	);
-  calc_position_to_ecef_frame_from_xyz(
+	calc_position_to_ecef_frame_from_xyz(
 		positions,
 		position_count,
 		longitude_rad,
@@ -412,7 +408,7 @@ void calc_position_to_uvw_frame_from_enu(
 	double hour_angle_rad,
 	double declination_rad,
 	double latitude_rad
-) {	
+) {
 	double sin_hour_angle = sin(hour_angle_rad);
 	double cos_hour_angle = cos(hour_angle_rad);
 	double sin_declination = sin(declination_rad);
@@ -508,7 +504,7 @@ void calc_position_delays(
 	);
 	const double reference_w = positions_xyz_in_uvw_out[reference_position_index*3 + 2];
 	while(position_count-- >= 1) {
-		delays[position_count] = 
+		delays[position_count] =
 			(positions_xyz_in_uvw_out[position_count*3 + 2] - reference_w) /
 				RADIOINTERFEROMETERY_C
 		;

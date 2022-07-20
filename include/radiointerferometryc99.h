@@ -20,8 +20,12 @@ enum position_frames {
 	FRAME_UVW
 };
 
-static inline double calc_modified_from_julian_date(double julian_date) {return  julian_date + 2400000.5;}
-static inline double calc_julian_date_from_modified(double modified_jd) {return  modified_jd - 2400000.5;}
+static inline double calc_julian_date_from_unix(double unix_sec) {
+	return (unix_sec / RADIOINTERFEROMETERY_DAYSEC) + 2440587.5;
+}
+
+static inline double calc_modified_from_julian_date(double julian_date) {return  julian_date - 2400000.5;}
+static inline double calc_julian_date_from_modified(double modified_jd) {return  modified_jd + 2400000.5;}
 
 double calc_julian_date_from_unix(double unix_sec);
 
@@ -66,13 +70,13 @@ void calc_independent_astrom(
 	double altitude,
 	double timemjd,
 	double dut1,
-    eraASTROM* astrom
+		eraASTROM* astrom
 );
 
 void calc_ha_dec_rad_with_independent_astrom(
 	double ra_rad,
 	double dec_rad,
-    eraASTROM* astrom,
+		eraASTROM* astrom,
 	double* hour_angle_rad,
 	double* declination_rad
 );
