@@ -1,32 +1,11 @@
 #include "radiointerferometryc99.h"
 
-double calc_epoch_seconds_from_guppi_param(
-	const double tbin,
-	const size_t sampleperblk,
-	const size_t piperblk,
-	const size_t synctime,
-	const size_t pktidx
-) {
-	 const double tperblk = sampleperblk * tbin;
-	 const double tperpktidx = tperblk / piperblk;
-	 return (double)synctime + tperpktidx*pktidx;
+inline double calc_rad_from_degree(double deg) {
+	return (deg/180)*RADIOINTERFEROMETERY_PI;
 }
-double calc_julian_date_from_guppi_param(
-	const double tbin,
-	const size_t sampleperblk,
-	const size_t piperblk,
-	const size_t synctime,
-	const size_t pktidx
-) {
-	return calc_julian_date_from_unix(
-		calc_epoch_seconds_from_guppi_param(
-			tbin,
-			sampleperblk,
-			piperblk,
-			synctime,
-			pktidx
-	 	)
-	);
+
+inline double calc_julian_date_from_unix(double unix_sec) {
+	return (unix_sec / RADIOINTERFEROMETERY_DAYSEC) + 2440587.5;
 }
 
 void calc_independent_astrom(

@@ -11,8 +11,6 @@
 #define RADIOINTERFEROMETERY_PI 3.14159265358979323846
 #define RADIOINTERFEROMETERY_C 299792458.0
 
-static inline double calc_deg2rad(double deg) {return (deg/180)*RADIOINTERFEROMETERY_PI;};
-
 enum position_frames {
 	FRAME_ENU,
 	FRAME_XYZ,
@@ -20,12 +18,7 @@ enum position_frames {
 	FRAME_UVW
 };
 
-static inline double calc_julian_date_from_unix(double unix_sec) {
-	return (unix_sec / RADIOINTERFEROMETERY_DAYSEC) + 2440587.5;
-}
-
-static inline double calc_modified_from_julian_date(double julian_date) {return  julian_date - 2400000.5;}
-static inline double calc_julian_date_from_modified(double modified_jd) {return  modified_jd + 2400000.5;}
+double calc_rad_from_degree(double deg);
 
 double calc_julian_date_from_unix(double unix_sec);
 
