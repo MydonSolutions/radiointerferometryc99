@@ -1,6 +1,6 @@
 // Currently this is only for internal use!
-#ifndef __GEODESY_H
-#define __GEODESY_H
+#ifndef __RADIOINTERFEROMETRY_C99_GEODESY_H_
+#define __RADIOINTERFEROMETRY_C99_GEODESY_H_
 
 #include <stddef.h>
 

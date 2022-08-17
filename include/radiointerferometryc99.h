@@ -1,5 +1,5 @@
-#ifndef _UVH5_CALC_H
-#define _UVH5_CALC_H
+#ifndef RADIOINTERFEROMETRY_C99_H_
+#define RADIOINTERFEROMETRY_C99_H_
 
 #include <stddef.h>
 #include <math.h>
@@ -156,4 +156,4 @@ void calc_position_delays(
 	double* delays
 );
 
-#endif
+#endif // RADIOINTERFEROMETRY_C99_H_
