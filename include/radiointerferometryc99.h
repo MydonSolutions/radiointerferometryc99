@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 #include <math.h>
-#include "_geodesy.h"
+#include "radiointerferometryc99/_geodesy.h"
 #include "erfa.h"
 #include "erfam.h"
 
