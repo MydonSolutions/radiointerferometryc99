@@ -4,8 +4,20 @@ inline double calc_rad_from_degree(double deg) {
 	return (deg/180)*RADIOINTERFEROMETERY_PI;
 }
 
-inline double calc_julian_date_from_unix(double unix_sec) {
+inline double calc_julian_date_from_unix_sec(double unix_sec) {
 	return (unix_sec / RADIOINTERFEROMETERY_DAYSEC) + 2440587.5;
+}
+
+inline double calc_unix_sec_from_julian_date(double julian_date) {
+	return (julian_date - 2440587.5) * RADIOINTERFEROMETERY_DAYSEC;
+}
+
+inline double calc_julian_date_from_modified(double modified_julian_date) {
+	return modified_julian_date + 2400000.5;
+}
+
+inline double calc_modified_from_julian_date(double julian_date) {
+	return julian_date - 2400000.5;
 }
 
 void calc_independent_astrom(

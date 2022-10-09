@@ -20,7 +20,10 @@ enum position_frames {
 
 double calc_rad_from_degree(double deg);
 
-double calc_julian_date_from_unix(double unix_sec);
+double calc_julian_date_from_unix_sec(double unix_sec);
+double calc_unix_sec_from_julian_date(double julian_date);
+double calc_julian_date_from_modified(double modified_julian_date);
+double calc_modified_from_julian_date(double julian_date);
 
 double calc_epoch_seconds_from_guppi_param(
 	const double tbin,
