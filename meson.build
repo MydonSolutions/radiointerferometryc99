@@ -1,5 +1,5 @@
-project('radioInterferometryc99', 'c',
-  version: '0.7.1',
+project('radiointerferometryc99', 'c',
+  version: '0.7.2',
   default_options: [
     'c_std=c99',
   ]
@@ -33,3 +33,5 @@ lib_radiointerferometry_dep = declare_dependency(
   dependencies: dep_lst,
   link_with: lib_radiointerferometry,
 )
+
+subdir('tests')
