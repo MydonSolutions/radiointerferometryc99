@@ -159,11 +159,11 @@ int radiointerferometry_iers_get(
   int record_index = record->mjd - 41684.0;
 
   // seek as close to record as naively can
-  if ((record_index+2)*189 > file_size) {
-    lseek(fd, ((file_size/189)-1)*189, SEEK_SET);
+  if ((record_index+2)*188 > file_size) {
+    lseek(fd, ((file_size/188)-1)*188, SEEK_SET);
   }
   else {
-    lseek(fd, record_index*189, SEEK_SET);
+    lseek(fd, record_index*188, SEEK_SET);
   }
 
   // search for record
@@ -187,13 +187,13 @@ int radiointerferometry_iers_get(
       if (record->mjd <= mjd) {
         break;
       }
-      lseek(fd, -15-189, SEEK_CUR);
+      lseek(fd, -15-188, SEEK_CUR);
     }
     else {
       if (record->mjd >= mjd) {
         break;
       }
-      lseek(fd, (189-15), SEEK_CUR);
+      lseek(fd, (188-15), SEEK_CUR);
     }
     
     if (15 > read(fd, char_record, 15)) {
@@ -233,7 +233,7 @@ int radiointerferometry_iers_get(
   
   radiointerferometry_iers_record_t next_record;
   _iers_record_parse(
-    char_record+189,
+    char_record+188,
     &next_record
   );
 
