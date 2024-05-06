@@ -96,6 +96,6 @@ typedef struct
 *  5: error interpolating, consequent record is not next day, sparse IERS records not expected.
 */
 int radiointerferometry_iers_get(
-  char* filepath,
+  const char* filepath,
   radiointerferometry_iers_record_t* record
 );

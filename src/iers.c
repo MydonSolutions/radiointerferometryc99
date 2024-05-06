@@ -143,7 +143,7 @@ int _iers_record_parse(
 }
 
 int radiointerferometry_iers_get(
-  char* filepath,
+  const char* filepath,
   radiointerferometry_iers_record_t* record
 ) {
   if (record->mjd < 41684.0) {

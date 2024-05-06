@@ -160,4 +160,17 @@ void calc_position_delays(
 	double* delays
 );
 
+int calc_itrs_icrs_frame_pos_angle(
+    double* time_jd,
+    double* app_ra_radians,
+    double* app_dec_radians,
+    size_t count,
+	double longitude_rad,
+	double latitude_rad,
+	double altitude,
+    double offset_pos,
+    const char* iers_filepath,
+    double* pos_angle
+);
+
 #endif // RADIOINTERFEROMETRY_C99_H_
