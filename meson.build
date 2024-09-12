@@ -1,5 +1,5 @@
 project('radiointerferometryc99', 'c',
-  version: '0.7.3',
+  version: '0.7.4',
   default_options: [
     'c_std=c99',
   ]
@@ -34,4 +34,6 @@ lib_radiointerferometry_dep = declare_dependency(
   link_with: lib_radiointerferometry,
 )
 
+build_dir = meson.current_build_dir()
+py = import('python').find_installation('python3', required: false)
 subdir('tests')

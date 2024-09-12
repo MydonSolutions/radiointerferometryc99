@@ -1,0 +1,9 @@
+services:
+  ric99:
+    container_name: ric99
+    build: .
+    entrypoint: /bin/sh
+    stdin_open: true
+    tty: true
+    volumes:
+    - .:/work/radiointerferometryc99
