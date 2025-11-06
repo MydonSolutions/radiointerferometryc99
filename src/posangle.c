@@ -9,11 +9,13 @@ int _itrs_transform_app_to_icrs(
   double* time_jd,
   double* app_ra_radians,
   double* app_dec_radians,
+  double* pm_x_arcsec,
+  double* pm_y_arcsec,
+  double* ut1_utc_sec,
   size_t count,
   double longitude_rad,
   double latitude_rad,
   double altitude,
-  const char* iers_filepath,
   double* icrs_ra,
   double* icrs_dec
 ) {
@@ -51,28 +53,12 @@ int _itrs_transform_app_to_icrs(
     - 1 being unacceptable date.
     - [2, 8] being iers_get() errcode + 3
   */
-
-  // Get IERS data, which is needed for highest precision
-  radiointerferometry_iers_record_t iers_rec = {0};
-  double pm_x_a_rad, pm_y_a_rad;
   double rbpn_matrix[3][3];
   double cip_x, cip_y;
   double cio_s;
   double eqn_org;
   int rv;
   for (size_t i = 0; i < count; i++) {
-    iers_rec.mjd = time_jd[i] - 2400000.5;
-    rv = radiointerferometry_iers_get(
-      iers_filepath,
-      &iers_rec
-    );
-    if (rv != 0) {
-      return (i+1)*10+(rv+3);
-    }
-
-    pm_x_a_rad = iers_rec.pm_x_a * (RADIOINTERFEROMETERY_PI/(180 * 3600)); // convert arcsec to radians
-    pm_y_a_rad = iers_rec.pm_y_a * (RADIOINTERFEROMETERY_PI/(180 * 3600)); // convert arcsec to radians
-
     eraPnm06a(time_jd[i], 0, rbpn_matrix);
     eraBpn2xy(rbpn_matrix, &cip_x, &cip_y);
     cio_s = eraS06(time_jd[i], 0, cip_x, cip_y);
@@ -85,12 +71,12 @@ int _itrs_transform_app_to_icrs(
       app_ra_radians[i] + eqn_org,
       app_dec_radians[i],
       time_jd[i], 0,
-      iers_rec.ut1_utc_a,
+      ut1_utc_sec[i],
       longitude_rad,
       latitude_rad,
       altitude,
-      pm_x_a_rad,
-      pm_y_a_rad,
+      pm_x_arcsec[i] * (RADIOINTERFEROMETERY_PI/(180 * 3600)), // convert arcsec to radian
+      pm_y_arcsec[i] * (RADIOINTERFEROMETERY_PI/(180 * 3600)), // convert arcsec to radian
       0, // atm pressure, used for refraction (ignored)
       0, // amb temperature, used for refraction (ignored)
       0, // rel humidity, used for refraction (ignored)
@@ -117,6 +103,68 @@ int calc_itrs_icrs_frame_pos_angle(
   double altitude,
   double offset_pos,
   const char* iers_filepath,
+  double* pos_angle
+) {
+  /*
+  Calculate an position angle given apparent position and reference frame.
+
+  Accesses IERS data then calls `calc_itrs_icrs_frame_pos_angle_with_pm_and_ut1_utc`
+  */
+
+  // Get IERS data, which is needed for highest precision
+  radiointerferometry_iers_record_t iers_rec = {0};
+  double* pm_x_arcsec = malloc(count*sizeof(double));
+  double* pm_y_arcsec = malloc(count*sizeof(double));
+  double* ut1_utc_sec = malloc(count*sizeof(double));
+  int rv;
+  
+  for (size_t i = 0; i < count; i++) {
+    iers_rec.mjd = time_jd[i] - 2400000.5;
+    rv = radiointerferometry_iers_get(
+      iers_filepath,
+      &iers_rec
+    );
+    if (rv != 0) {
+      return (i+1)*10+(rv+3);
+    }
+    pm_x_arcsec[i] = iers_rec.pm_x_a;
+    pm_y_arcsec[i] = iers_rec.pm_y_a;
+    ut1_utc_sec[i] = iers_rec.ut1_utc_a;
+  }
+
+  rv = calc_itrs_icrs_frame_pos_angle_with_pm_and_ut1_utc(
+    time_jd,
+    app_ra_radians,
+    app_dec_radians,
+    pm_x_arcsec,
+    pm_y_arcsec,
+    ut1_utc_sec,
+    count,
+    longitude_rad,
+    latitude_rad,
+    altitude,
+    offset_pos,
+    pos_angle
+  );
+
+  free(pm_x_arcsec);
+  free(pm_y_arcsec);
+  free(ut1_utc_sec);
+  return rv;
+}
+
+int calc_itrs_icrs_frame_pos_angle_with_pm_and_ut1_utc(
+  double* time_jd,
+  double* app_ra_radians,
+  double* app_dec_radians,
+  double* pm_x_arcsec,
+  double* pm_y_arcsec,
+  double* ut1_utc_sec,
+  size_t count,
+  double longitude_rad,
+  double latitude_rad,
+  double altitude,
+  double offset_pos,
   double* pos_angle
 ) {
   /*
@@ -154,19 +202,23 @@ int calc_itrs_icrs_frame_pos_angle(
     Array of position angles, in units of radians. Taken to be allocated.
 
   : int
-    Zero if success, otherwise `(index+1)+count+errcode` encoding the index of the
+    Zero if success, otherwise `(index+1)*10+errcode` encoding the index of the
     erroneous element and the errorcodes:
+    - -1 being early date
     - 0 being dubious year
     - 1 being unacceptable date.
-    - >=2 being iers_get() errcode + 3
+    - >=2 being iers_get() errcode + 1
   */
 
-  double *_time_jd, *_app_ra_radians, *_app_dec_radians, *icrs_ra, *icrs_dec;
+  double *_time_jd, *_app_ra_radians, *_app_dec_radians, *_pm_x_arcsec, *_pm_y_arcsec, *_ut1_utc_sec, *icrs_ra, *icrs_dec;
   size_t array_size = sizeof(double)*count;
 
   _time_jd = malloc(2*array_size);
   _app_ra_radians = malloc(2*array_size);
   _app_dec_radians = malloc(2*array_size);
+  _pm_x_arcsec = malloc(2*array_size);
+  _pm_y_arcsec = malloc(2*array_size);
+  _ut1_utc_sec = malloc(2*array_size);
   icrs_ra = malloc(2*array_size);
   icrs_dec = malloc(2*array_size);
   
@@ -174,6 +226,12 @@ int calc_itrs_icrs_frame_pos_angle(
   memcpy(_time_jd+count, time_jd, array_size);
   memcpy(_app_ra_radians, app_ra_radians, array_size);
   memcpy(_app_ra_radians+count, app_ra_radians, array_size);
+  memcpy(_pm_x_arcsec, pm_x_arcsec, array_size);
+  memcpy(_pm_x_arcsec+count, pm_x_arcsec, array_size);
+  memcpy(_pm_y_arcsec, pm_y_arcsec, array_size);
+  memcpy(_pm_y_arcsec+count, pm_y_arcsec, array_size);
+  memcpy(_ut1_utc_sec, ut1_utc_sec, array_size);
+  memcpy(_ut1_utc_sec+count, ut1_utc_sec, array_size);
   for (size_t i = 0; i < count; i++) {
     _app_dec_radians[i] = app_dec_radians[i] - offset_pos;
     // Wrap the positions if they happen to go over the poles
@@ -194,11 +252,13 @@ int calc_itrs_icrs_frame_pos_angle(
     _time_jd,
     _app_ra_radians,
     _app_dec_radians,
+    _pm_x_arcsec,
+    _pm_y_arcsec,
+    _ut1_utc_sec,
     2*count,
     longitude_rad,
     latitude_rad,
     altitude,
-    iers_filepath,
     icrs_ra,
     icrs_dec
   );
@@ -213,9 +273,13 @@ int calc_itrs_icrs_frame_pos_angle(
       icrs_ra[i], icrs_dec[i], icrs_ra[count+i], icrs_dec[count+i]
     );
   }
+
   free(_time_jd);
   free(_app_ra_radians);
   free(_app_dec_radians);
+  free(_pm_x_arcsec);
+  free(_pm_y_arcsec);
+  free(_ut1_utc_sec);
   free(icrs_ra);
   free(icrs_dec);
   return rv;

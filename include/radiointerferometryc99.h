@@ -173,4 +173,19 @@ int calc_itrs_icrs_frame_pos_angle(
     double* pos_angle
 );
 
+int calc_itrs_icrs_frame_pos_angle_with_pm_and_ut1_utc(
+  double* time_jd,
+  double* app_ra_radians,
+  double* app_dec_radians,
+  double* pm_x_arcsec,
+  double* pm_y_arcsec,
+  double* ut1_utc_sec,
+  size_t count,
+  double longitude_rad,
+  double latitude_rad,
+  double altitude,
+  double offset_pos,
+  double* pos_angle
+);
+
 #endif // RADIOINTERFEROMETRY_C99_H_

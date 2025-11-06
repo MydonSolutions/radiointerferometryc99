@@ -1,6 +1,3 @@
-
-
-
 import ctypes
 import sys
 assert len(sys.argv) == 3, "Provide the RadioInterferometryC99 library .so filepath and the IERS filepath."
