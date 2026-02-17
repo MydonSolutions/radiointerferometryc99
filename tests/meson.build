@@ -16,6 +16,14 @@ test('posangle', executable(
 	is_parallel: false
 )
 
+test('times', executable(
+  'times', ['times.c'],
+	dependencies: lib_radiointerferometry_dep,
+	),
+	args : [iers_filepath],
+	is_parallel: false
+)
+
 if py.found()
 	# ATA-like accumulation.
 	test(

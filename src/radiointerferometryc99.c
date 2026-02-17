@@ -4,6 +4,36 @@ inline double calc_rad_from_degree(double deg) {
 	return (deg/180)*RADIOINTERFEROMETERY_PI;
 }
 
+int calc_modified_julian_date_from_ymd(int y, int m, int d) 
+{
+  int leap;
+
+  /* month lengths in days for normal and leap years */
+  static int mtab[2][13] = {
+    {0,31,28,31,30,31,30,31,31,30,31,30,31},
+    {0,31,29,31,30,31,30,31,31,30,31,30,31}
+  };
+
+  /*validate year*/
+  if (y<-4699) {
+    return -1;
+  } else {
+    /* validate month */
+    if (m<1 || m>12) {
+      return -2;
+    } else {
+      /* allow for leap year */
+      leap = (y%4 == 0 && y%100 != 00) || y%400 == 0;
+      /* validate day */
+      if (d<1 || d>mtab[leap][m]) {
+        return -3;
+      }
+    }
+  }
+
+  return (1461*(y-(12-m)/10+4712))/4 + (5+306*((m+9)%12))/10 - (3*((y-(12-m)/10+4900)/100))/4 + d - 2399904;
+}
+
 inline double calc_julian_date_from_unix_sec(double unix_sec) {
 	return (unix_sec / RADIOINTERFEROMETERY_DAYSEC) + 2440587.5;
 }

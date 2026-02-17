@@ -21,6 +21,12 @@ enum position_frames {
 
 double calc_rad_from_degree(double deg);
 
+// Replicate sla_Cldj, based on Hatcher (1984) QJRAS 25, 53-55
+// Negative values indicate invalid values {-1: y, -2: m, -3: d}
+// https://github.com/scottransom/pyslalib/blob/fcb0650a140a8002cc6c0e8918c3e4c6fe3f8e01/cldj.f
+// https://github.com/scottransom/fixbeampos/blob/7b0590a068028eb9ada59678ef0d42640fbdbf4a/cal2mjd.c
+int calc_modified_julian_date_from_ymd(int y, int m, int d);
+
 double calc_julian_date_from_unix_sec(double unix_sec);
 double calc_unix_sec_from_julian_date(double julian_date);
 double calc_julian_date_from_modified(double modified_julian_date);
