@@ -10,7 +10,7 @@ inc_lst = [
 	include_directories('include')
 ]
 dep_lst = [
-  dependency('erfa'),
+  dependency('erfa', static: get_option('default_library') == 'static'),
 ]
 cc = meson.get_compiler('c')
 m_dep = cc.find_library('m', required : true)
